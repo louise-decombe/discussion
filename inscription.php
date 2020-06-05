@@ -7,18 +7,26 @@ session_start();
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
   <head>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="discussion.css">
     <meta charset="utf-8">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
     <title>Inscription</title>
   </head>
   <body>
+    <header>
+      <?php
+      if(isset($_SESSION['login'])){
+        echo '<ul> <li><a href="profil.php">   Vous êtes connecté(e)      '.$_SESSION['login'].'</a></li>'.' <li> <a href="profil.php">Votre profil</a></li></ul>';
+      }
+      else { ?>
+        <ul>
+        <li><a href="index.php">accueil</a></li>
+        <li><a href="connexion.php">connexion</a></li>
+        </ul>
+      <?php  }?>
 
-<header>
-<a href="index.php">Accueil</a>
-</header>
-
+    </header>
 <main>
 
   <?php
@@ -48,21 +56,13 @@ if (isset($_POST['submit'])) {
         $pass = stripslashes($_POST['password']);
         $pass = mysqli_real_escape_string($conn, $pass);
 
-        var_dump($log);
-        var_dump($pass);
-
-				// requête pour insérer le nouvel utilisateur dans la bdd
-
-        $query = " INSERT INTO `utilisateurs`(`login`, `password`) VALUES ('$log', '$pass')";
+        $query = " INSERT INTO `utilisateurs`(`login`, `password`) VALUES ('$log', '".hash('sha256', $pass)."')";
         echo $query;
 
-        var_dump($query);
-
         $res = mysqli_query($conn, $query);
-        var_dump($res);
 
         if ($res) {
-            echo "azerty";
+
             header('location:connexion.php');
 
         }
@@ -74,31 +74,37 @@ if (isset($_POST['submit'])) {
 ?>
 
 <div class="titre_inscription">
-  <h2>Inscription</h2>
-  <p>Vous pouvez-vous inscrire ici</p>
 </div>
 
-<div class="form_img">
+<div class="login-box">
+  <h2>Inscription</h2>
+
 
       <form action="inscription.php" method="post">
 
-          Veuillez remplir ce formulaire pour vous inscrire:<br />
-              <label for="login">Nom d'utilisateur</label><input type="text" name="login"> <br />
-              <label for="password">Mot de passe</label><input type="password" name="password" /><br />
-              <input type="submit" value="submit" name="submit" />
+        <p>  Veuillez remplir ce formulaire pour vous inscrire:</p><br />
+              <label>Nom d'utilisateur</label>
+              <div class="user-box">
+              <input type="text" name="login"> <br />
+            </div>
+              <label>Mot de passe</label>
+              <div class="user-box">
+
+              <input type="password" name="password" /><br />
+            </div>
+
+            <div class="wrapper">
+              <span class="bounce_button">
+                <input type="submit" name="submit" value="submit">
+              </span>
+             </div>
 
       </form>
-
-  <img src="img/inscription.jpeg" alt="illustration inscription">
 
 </div>
 
 </main>
 
-<footer>
-<p> Retrouvez-nous sur gitub ou insta</p>
-
-</footer>
 
   </body>
 </html>

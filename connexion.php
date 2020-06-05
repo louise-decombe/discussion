@@ -1,46 +1,33 @@
 
-
 <?php
+session_start();
+require('config.php');
 
-if(isset($_SESSION['login'])){
-	echo "<h4>vous etes en ligne actuellement</h4> <br />";
-	echo "<a href=profil.php>voir mon profil </a> ou <a href=index.php>retour à l'accueil </a> ou <a href=discussion.php>
-	voir le chat</a> ";
+if (isset($_SESSION['login'])) {
+    echo "<h4>vous etes en ligne actuellement</h4> <br />";
+    echo "<a href=profil.php>voir mon profil </a> ou <a href=index.php>retour à l'accueil </a> ou <a href=discussion.php>
+      Voir le chat</a> ";
 
-	exit;
+    exit;
 }
-//si la connexion est faite depuis la formulaire et le bouton submit
-if(isset($_POST['submit']))
-{
-	// vérification que les champs de login et password sont bien remplis
-	if (empty($_POST['login']))
-	{
-		echo "<h2><i>il manque votre login.</i></h2>";
-	}
-	else
-	{
-		if(empty($_POST['password']))
-		{
-			echo "<h2><i>il manque votre mot de passe.</i></h2>";
-		}
-		else {
 
-			$login= htmlentities($_POST['login']);
-			$password= htmlentities($_POST['password']);
-//connexion à la base de donnée
-$mysqli= mysqli_connect ("localhost","root","","discussion");
+if (isset($_POST['login'])){
+  $login = stripslashes($_POST['login']);
+  $login = mysqli_real_escape_string($conn, $login);
+  $_SESSION['login'] = $login;
+  $password = stripslashes($_POST['password']);
+  $password = mysqli_real_escape_string($conn, $password);
+    $query = "SELECT * FROM `utilisateurs` WHERE login='$login'
+  and password='".hash('sha256', $password)."'";
 
-if(!$mysqli){
-	echo "erreur de connexion";
-}
-	else {
-//si la session démarre, redirection vers la page de profil de l'utilisateur
-	$_SESSION['login'] = $login;
-echo "vous êtes connecté";
-header('location: profil.php');
-}
-}
-}
+  $result = mysqli_query($conn,$query) or die(mysql_error());
+
+  if (mysqli_num_rows($result) == 1) {
+    $user = mysqli_fetch_assoc($result);
+    header('location: profil.php');
+  }else{
+    $message = "Le nom d'utilisateur ou le mot de passe est incorrect.";
+  }
 }
 ?>
 
@@ -48,7 +35,7 @@ header('location: profil.php');
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
   <head>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="discussion.css">
     <meta charset="utf-8">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
@@ -56,40 +43,51 @@ header('location: profil.php');
   </head>
   <body>
 
-<header>
-<a href="index.php">Accueil</a>
-<a href="inscription.php">Inscription</a>
+    <header>
+      <?php
+      if(isset($_SESSION['login'])){
+        echo '<ul> <li><a href="profil.php">   Vous êtes connecté(e)      '.$_SESSION['login'].'</a></li>'.' <li> <a href="profil.php">Votre profil</a></li></ul>';
+      }
+      else { ?>
+        <ul>
+        <li><a href="index.php">accueil</a></li>
+        <li><a href="inscription.php">inscription</a></li>
+        </ul>
+      <?php  }?>
 
-</header>
+    </header>
 
 <main>
 
-<div class="titre_inscription">
-  <h2>connexion</h2>
-  <p>Vous pouvez vous connecter ici</p>
+<div class="login-box">
+  <h2>Connexion</h2>
+  <div class="user-box">
+  <form class="" action="connexion.php" method="post">
+  </div>
+  <label>Votre login</label>
+  <div class="user-box">
+  <input type="text" name="login" value="">
+</div>
+  <label>Votre mot de passe</label>
+    <div class="user-box">
+  <input type="password" name="password" value="">
 </div>
 
-<div class="form_img">
 
-  <form class="" action="connexion.php" method="post">
-  <p>Votre login</p>
-  <input type="text" name="login" value="">
-  <p>Votre mot de passe</p>
-  <input type="password" name="password" value="">
-  <p>Confirmez votre mot de passe</p>
+<div class="wrapper">
+  <span class="bounce_button">
+    <input type="submit" name="submit" value="submit">
+  </span>
+ </div>
 
-  <input type="submit" name="submit" value="submit">
+
+</div>
   </form>
-
-
 </div>
 
 </main>
 
-<footer>
-<p> Retrouvez-nous sur gitub ou insta</p>
 
-</footer>
 
   </body>
 </html>

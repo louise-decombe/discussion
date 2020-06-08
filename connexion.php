@@ -17,13 +17,16 @@ if (isset($_POST['login'])){
   $_SESSION['login'] = $login;
   $password = stripslashes($_POST['password']);
   $password = mysqli_real_escape_string($conn, $password);
-    $query = "SELECT * FROM `utilisateurs` WHERE login='$login'
+
+$query = "SELECT * FROM `utilisateurs` WHERE login='$login'
   and password='".hash('sha256', $password)."'";
 
   $result = mysqli_query($conn,$query) or die(mysql_error());
 
   if (mysqli_num_rows($result) == 1) {
     $user = mysqli_fetch_assoc($result);
+    $_SESSION['id'] = $user['id'];
+      $_SESSION['login'] = $login;
     header('location: profil.php');
   }else{
     $message = "Le nom d'utilisateur ou le mot de passe est incorrect.";

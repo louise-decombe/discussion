@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('config.php');
+session_id();
 
 //si la demande déconnexion existe, fin de la session
 if (isset($_GET['deconnexion'])) {

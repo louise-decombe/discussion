@@ -1,11 +1,18 @@
 <?php
 
+
+// la session démarre
+
 session_start();
-require('config.php');
+
+// action de déconnexion et redirection vers la page d'accueil
+
 if (isset($_GET['deconnexion'])) {
 
     unset($_SESSION['login']);
+
     //au bout de 2 secondes redirection vers la page d'accueil
+
     header("Refresh: 2; url=index.php");
 
     echo "<p>Vous avez été déconnecté</p><br><p>Redirection vers la page d'accueil...</p>";
@@ -24,7 +31,11 @@ if (isset($_GET['deconnexion'])) {
     </head>
 
     <header>
+
       <?php
+
+// si l'utilisateur est connecté le header est personnalisé sinon il invite à la connexion
+
       if(isset($_SESSION['login'])){
         echo '<ul><li> <a href="index.php">Accueil</a></li>'.'<li><a href="profil.php">   Vous êtes connecté(e)     '.$_SESSION['login'].'</a></li>'.'<li><a href="profil.php?deconnexion">
             Déconnexion </a></li></ul>' ;
@@ -43,53 +54,52 @@ if (isset($_GET['deconnexion'])) {
 <br/>
 
 <div class="sub-message">
-  <input type="submit" value="poster" />
+  <input type="submit" value="poster" name="poster" />
 
 </div>
     </form>
   </div>
     <?php
+// si l'utilisateur est connecté les messages s'affichent
 
-    if (isset($_POST['poster'])){
+  if(isset($_SESSION['login'])){
+
+  try
+  {
+  	$bdd = new PDO('mysql:host=localhost;dbname=discussion;charset=utf8', 'root', '');
+  }
+  catch(Exception $e)
+  {
+          die('Erreur : '.$e->getMessage());
+  }
+
+// requête pour accéder à la base de donnée
 
 
-      $id=("SELECT * FROM messages INNER JOIN utilisateurs ON message.id_utilisateur = utilisateurs.id");
-      $message=($_POST['message']);
+$reponse = $bdd->query(' SELECT message, id_utilisateur, date, login FROM messages inner join utilisateurs on utilisateurs.id = messages.id_utilisateur
+    ORDER BY date DESC ');
 
-      date_default_timezone_set('Europe/Paris');
-      $date=date('Y-m-d h:i:s');
-      $query= mysqli_query($conn, "INSERT INTO `messages`( `message`,`date`,`id_utilisateur`) VALUES ('$message','$date','$id')");
+ $donnees = $reponse->fetch();
 
-      echo $query;
 
-      $res = mysqli_query($conn, $query);
-
-      if ($res) {
-
-          header('location:discussion .php');
-          echo "message posté!";
-
-    }
-
-    }
-    else {
-      echo "le message est vide";
-    }
-
-  if (isset($_SESSION['login'])){
-
-    $reponse = $conn->query('SELECT message, id_utilisateur, date, login FROM messages, utilisateurs
-            WHERE messages.id_utilisateur = utilisateurs.id ORDER BY date DESC ');
-      $donnees = $reponse->fetch_assoc();
-
-    while ($donnees = $reponse->fetch_assoc())
-    {
-     echo $donnees['message'].'<br />'.'posté le :   '. $donnees['date'] . '<br />'. 'par     '. $donnees['login']. '<br />';
-    }
+// début de la boucle qui permet d'afficher les messages
 
 
 
+
+
+while ($donnees = $reponse->fetch())
+{
+  echo '<p><strong><div class="chat">'.htmlspecialchars($donnees['date']).'--->' .htmlspecialchars($donnees['login']) . '</strong> : ' . htmlspecialchars($donnees['message']) .'</div></p>';
 }
+//fin de la requête
+$reponse->closeCursor();
+}
+
+
+
+
+
 else {
 
   echo "<h4>vous n'êtes pas connecté</h4> <br />";
@@ -98,6 +108,44 @@ else {
   exit;
 
 }
+?>
+
+<?php
+    if (isset($_POST['poster']))
+
+// requête sql pour mettre le message dans la base de donnée
+
+{
+
+  try{
+                  $dbco = new PDO('mysql:host=localhost;dbname=discussion;charset=utf8', 'root', '');
+
+                  $id= ($_SESSION['id']);
+
+                  $message=($_POST['message']);
+
+                  date_default_timezone_set('Europe/Paris');
+                  $date=date('Y-m-d h:i:s');
+
+                  $sql = "INSERT INTO `messages`( `message`,`date`,`id_utilisateur`) VALUES ('$message','$date','$id')";
+                  $dbco->exec($sql);
+
+                  echo "<br /><i>votre message a été posté</i>";
+                  header("Refresh: 2; url=discussion.php");
+
+                }
+
+
+              catch(PDOException $e){
+                  $dbco->rollBack();
+                echo "Erreur : " . $e->getMessage();
+              }
+
+
+}
+
     ?>
+
+
     </body>
 </html>

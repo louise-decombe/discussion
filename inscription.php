@@ -56,12 +56,15 @@ if (isset($_POST['submit'])) {
         $pass = stripslashes($_POST['password']);
         $pass = mysqli_real_escape_string($conn, $pass);
 
+// l'utilisateur est inséré dans la base de donnée
         $query = " INSERT INTO `utilisateurs`(`login`, `password`) VALUES ('$log', '".hash('sha256', $pass)."')";
         echo $query;
 
         $res = mysqli_query($conn, $query);
 
         if ($res) {
+
+// si l'utilisateur est correctement inscrit il est invité à se connecter sur la page connexion
 
             header('location:connexion.php');
 

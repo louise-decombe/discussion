@@ -27,6 +27,9 @@ if (isset($_GET['deconnexion'])) {
   <body>
     <header>
       <?php
+
+// si l'utilisateur est connecté le header est personnalisé
+
       if(isset($_SESSION['login'])){
         echo '<ul><li> <a href="index.php">Accueil</a></li>'.'<li><a href="profil.php">   Vous êtes connecté(e)     '.$_SESSION['login'].'</a></li>'.'<li><a href="discussion.php"> accéder au chat </a></li>'.'<li><a href="profil.php?deconnexion">
             Déconnexion </a></li></ul>' ;
@@ -44,6 +47,9 @@ if (isset($_GET['deconnexion'])) {
 
 </main>
 <?php
+
+// l'utilisateur connecté à accès à son profil
+
 if (isset($_SESSION['login'])) {
 echo ' <div class="profil"> Votre espace ' . $_SESSION['login'] . '</div>';
 } else {
@@ -63,6 +69,11 @@ $newlog=$_POST['newlog'];
 $newpass = $_POST['newpass'];
 
 
+// l'utilisateur peut modifier ses informations qui vont être changéesdans la base de donnée
+
+
+// maj du login
+
 if ($newlog){
   $query= mysqli_query($conn, "SELECT * FROM utilisateurs WHERE login='$login'" );
   $row=mysqli_num_rows($query);
@@ -75,6 +86,8 @@ if ($newlog){
 'incorrect';
   }
 }
+
+// maj du mot de passe
 
 if($newpass) {
 

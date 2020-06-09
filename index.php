@@ -1,5 +1,4 @@
 <?php
-
 session_start() ?>
 
 <!DOCTYPE html>
@@ -15,15 +14,19 @@ session_start() ?>
 
 <header>
   <?php
-  if(isset($_SESSION['login'])){
-    echo '<ul> <li><a href="profil.php">   Tu es connecté(e)      '.$_SESSION['login'].'</a></li>'.'<li><a href="discussion.php"> accéder au chat </a></li>'.'<li><a href="profil.php?deconnexion"> deconnexion </a></li></ul>';
-  }
-  else { ?>
+// Si s'utilisateur est loggé le header est personnalisé
+if (isset($_SESSION['login']))
+{
+    echo '<ul> <li><a href="profil.php">   Tu es connecté(e)      ' . $_SESSION['login'] . '</a></li>' . '<li><a href="discussion.php"> accéder au chat </a></li>' . '<li><a href="profil.php?deconnexion"> deconnexion </a></li></ul>';
+}
+else
+{ ?>
     <ul>
     <li><a href="connexion.php">connexion</a></li>
     <li><a href="inscription.php">inscription</a></li>
     </ul>
-  <?php  }?>
+  <?php
+} ?>
 
 </header>
 

@@ -75,7 +75,6 @@ if (isset($_GET['deconnexion'])) {
 
 // requête pour accéder à la base de donnée
 
-
 $reponse = $bdd->query(' SELECT message, id_utilisateur, date, login FROM messages inner join utilisateurs on utilisateurs.id = messages.id_utilisateur
     ORDER BY date DESC ');
 
@@ -85,9 +84,6 @@ $reponse = $bdd->query(' SELECT message, id_utilisateur, date, login FROM messag
 // début de la boucle qui permet d'afficher les messages
 
 
-
-
-
 while ($donnees = $reponse->fetch())
 {
   echo '<p><strong><div class="chat">'.htmlspecialchars($donnees['date']).'--->' .htmlspecialchars($donnees['login']) . '</strong> : ' . htmlspecialchars($donnees['message']) .'</div></p>';
@@ -95,8 +91,6 @@ while ($donnees = $reponse->fetch())
 //fin de la requête
 $reponse->closeCursor();
 }
-
-
 
 
 

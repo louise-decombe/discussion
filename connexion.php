@@ -1,7 +1,12 @@
 
 <?php
+
+// la session démarre le fichier de connexion à la BDD est appelé
+
 session_start();
 require('config.php');
+
+// Si l'utilisateur est loggé le header est personnalisé
 
 if (isset($_SESSION['login'])) {
     echo "<h4>vous etes en ligne actuellement</h4> <br />";
@@ -11,6 +16,8 @@ if (isset($_SESSION['login'])) {
     exit;
 }
 
+// si l'utilisateur veut se connecter vérification de ses informations
+
 if (isset($_POST['login'])){
   $login = stripslashes($_POST['login']);
   $login = mysqli_real_escape_string($conn, $login);
@@ -18,10 +25,14 @@ if (isset($_POST['login'])){
   $password = stripslashes($_POST['password']);
   $password = mysqli_real_escape_string($conn, $password);
 
+// requête et exécution pour de la recherche dans la base de donnée
+
 $query = "SELECT * FROM `utilisateurs` WHERE login='$login'
   and password='".hash('sha256', $password)."'";
 
   $result = mysqli_query($conn,$query) or die(mysql_error());
+
+// si l'utilisateur est reconnu la session démarre et envoie l'utilisateur sur sa page profil
 
   if (mysqli_num_rows($result) == 1) {
     $user = mysqli_fetch_assoc($result);

@@ -9,7 +9,8 @@ define('DB_NAME', 'discussion');
 $conn = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
 // Vérifier la connexion
-if($conn === false){
+if ($conn === false)
+{
     die("ERREUR : Impossible de se connecter. " . mysqli_connect_error());
 }
 ?>
